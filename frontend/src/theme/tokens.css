@@ -1,0 +1,175 @@
+/*
+ * Design tokens: the only place CSS colours, fonts, radii and shadows are defined.
+ *
+ * Style: flat, Swiss (International Typographic Style). Black, white and greys, one vibrant
+ * electric-blue accent, a strict grid, hairline rules, no shadows or gradients. Headline
+ * numbers sit on solid "hero" blocks (black for Total, blue for Products).
+ *
+ * Two modes are plain CSS variables (--eb-*). <html data-theme> picks one. The @theme block
+ * maps them to Tailwind names (bg-card, text-heading …), so components never mention a theme.
+ */
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --eb-page: #f3f3f4;
+  --eb-card: #ffffff;
+  --eb-raised: #f4f4f5; /* inputs hover, table hover */
+  --eb-line: #e2e2e5;   /* hairlines */
+  --eb-strong-line: #09090b;
+  --eb-heading: #09090b;
+  --eb-body: #3f3f46;   /* higher contrast body text (~10:1 on white) */
+  --eb-subtle: #71717a; /* icons, placeholders; also passes 4.5:1 for small hints */
+
+  --eb-accent: #2f52f5;        /* electric blue: the one vibrant colour */
+  --eb-accent-subtle: #eaeefe;
+  --eb-accent-ink: #2443d6;
+
+  /* Hero blocks: solid fills for the headline numbers */
+  --eb-hero-total: #09090b;
+  --eb-hero-total-ink: #ffffff;
+  --eb-hero-product: #2f52f5;
+  --eb-hero-product-ink: #ffffff;
+
+  /* Status colours: only where colour MEANS good / bad */
+  --eb-success: #0a8a4a;
+  --eb-success-subtle: #e6f6ed;
+  --eb-success-ink: #087a41;
+  --eb-danger: #d92d20;
+  --eb-danger-subtle: #fdeceb;
+  --eb-danger-ink: #b42318;
+  --eb-warning: #b54708;
+  --eb-warning-subtle: #fef4e6;
+  --eb-warning-ink: #93370d;
+
+  --eb-sidebar: #09090b;
+  --eb-sidebar-text: #d4d4d8;  /* menu items: clear on black */
+  --eb-sidebar-muted: #8b8b95; /* group labels, "Soon" */
+
+  /* Chart categorical series, fixed order. Validated with the dataviz skill's checker
+     (light surface #ffffff): all six checks pass. One-series charts use chart-1 only. */
+  --eb-chart-1: #2f52f5;
+  --eb-chart-2: #e4720b;
+  --eb-chart-3: #0f9a6c;
+  --eb-chart-4: #9b45e6;
+  --eb-chart-5: #e0427e;
+  --eb-chart-6: #7d8f12;
+  /* "Others" and unknown buckets */
+  --eb-chart-muted: #d4d4d8;
+
+  /* Buttons (Shopify Polaris-style): a soft bevel made of inner highlight + edge shadow.
+     The only shadows in the UI besides floating menus; they make controls feel pressable. */
+  --eb-btn-primary-bg: #18181b;
+  --eb-btn-primary-hover: #2a2a2e;
+  --eb-btn-primary-ink: #ffffff;
+  --eb-btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    0 1px 2px rgba(0, 0, 0, 0.18);
+  --eb-btn-primary-pressed: inset 0 2px 3px rgba(0, 0, 0, 0.45);
+  --eb-btn-secondary-bg: #ffffff;
+  --eb-btn-secondary-hover: #f7f7f8;
+  --eb-btn-secondary-ink: #18181b;
+  --eb-btn-secondary-shadow: 0 0 0 1px #d4d4d8, inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(0, 0, 0, 0.05);
+  --eb-btn-secondary-pressed: 0 0 0 1px #c4c4c8, inset 0 1px 2px rgba(0, 0, 0, 0.12);
+  --eb-input-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  --eb-lift-shadow: 0 6px 16px -6px rgba(9, 9, 11, 0.16);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --eb-page: #09090b;
+  --eb-card: #121214;
+  --eb-raised: #1b1b1f;
+  --eb-line: #2a2a2f;
+  --eb-strong-line: #fafafa;
+  --eb-heading: #fafafa;
+  --eb-body: #c4c4cc;   /* higher contrast body text */
+  --eb-subtle: #8b8b95;
+
+  --eb-accent: #5d7cff;
+  --eb-accent-subtle: #161d3a;
+  --eb-accent-ink: #8ea3ff;
+
+  /* Inverted in dark mode: the Total block becomes white */
+  --eb-hero-total: #fafafa;
+  --eb-hero-total-ink: #09090b;
+  --eb-hero-product: #3d5eff;
+  --eb-hero-product-ink: #ffffff;
+
+  --eb-success: #34c37a;
+  --eb-success-subtle: #0d2a1b;
+  --eb-success-ink: #5fd99a;
+  --eb-danger: #f2544b;
+  --eb-danger-subtle: #2f1211;
+  --eb-danger-ink: #ff8a82;
+  --eb-warning: #f79009;
+  --eb-warning-subtle: #2b1d07;
+  --eb-warning-ink: #fdb022;
+
+  --eb-sidebar: #000000;
+  --eb-sidebar-text: #d4d4d8;
+  --eb-sidebar-muted: #8b8b95;
+
+  /* Validated against dark surface #111113: all six checks pass. */
+  --eb-chart-1: #5d7cff;
+  --eb-chart-2: #d0731f;
+  --eb-chart-3: #26a077;
+  --eb-chart-4: #a774f0;
+  --eb-chart-5: #e05a8b;
+  --eb-chart-6: #86992b;
+  --eb-chart-muted: #3f3f46;
+
+  /* Buttons in dark mode: primary inverts to white; secondary is a raised dark key. */
+  --eb-btn-primary-bg: #fafafa;
+  --eb-btn-primary-hover: #e4e4e7;
+  --eb-btn-primary-ink: #09090b;
+  --eb-btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  --eb-btn-primary-pressed: inset 0 2px 3px rgba(0, 0, 0, 0.3);
+  --eb-btn-secondary-bg: #1f1f23;
+  --eb-btn-secondary-hover: #27272b;
+  --eb-btn-secondary-ink: #fafafa;
+  --eb-btn-secondary-shadow: 0 0 0 1px #34343a, inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  --eb-btn-secondary-pressed: 0 0 0 1px #3f3f46, inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  --eb-input-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  --eb-lift-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Tailwind names → the active palette. "inline" makes classes use the live variable. */
+@theme inline {
+  --color-page: var(--eb-page);
+  --color-card: var(--eb-card);
+  --color-raised: var(--eb-raised);
+  --color-line: var(--eb-line);
+  --color-strong-line: var(--eb-strong-line);
+  --color-heading: var(--eb-heading);
+  --color-body: var(--eb-body);
+  --color-subtle: var(--eb-subtle);
+
+  --color-accent: var(--eb-accent);
+  --color-accent-subtle: var(--eb-accent-subtle);
+  --color-accent-ink: var(--eb-accent-ink);
+  --color-hero-total: var(--eb-hero-total);
+  --color-hero-total-ink: var(--eb-hero-total-ink);
+  --color-hero-product: var(--eb-hero-product);
+  --color-hero-product-ink: var(--eb-hero-product-ink);
+
+  --color-success: var(--eb-success);
+  --color-success-subtle: var(--eb-success-subtle);
+  --color-success-ink: var(--eb-success-ink);
+  --color-danger: var(--eb-danger);
+  --color-danger-subtle: var(--eb-danger-subtle);
+  --color-danger-ink: var(--eb-danger-ink);
+  --color-warning: var(--eb-warning);
+  --color-warning-subtle: var(--eb-warning-subtle);
+  --color-warning-ink: var(--eb-warning-ink);
+  --color-sidebar: var(--eb-sidebar);
+  --color-sidebar-text: var(--eb-sidebar-text);
+  --color-sidebar-muted: var(--eb-sidebar-muted);
+}
+
+@theme {
+  --font-sans: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --radius-card: 0.75rem; /* soft, modern corners */
+}

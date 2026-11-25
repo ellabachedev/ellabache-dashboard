@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@import './theme/tokens.css';
+@import './theme/buttons.css';
+@import './theme/motion.css';
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--eb-page);
+  color: var(--eb-body);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  /* Optical sizing: the browser picks display shapes for big text, text shapes for small text */
+  font-optical-sizing: auto;
+  /* Inter: single-storey "a" (cv11) and open digits (ss01) for a cleaner, modern look */
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Numbers that line up in columns (tables, axis ticks). Not for big standalone figures. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

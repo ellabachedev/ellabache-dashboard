@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "bigquery": {
+      "type": "http",
+      "url": "https://bigquery.googleapis.com/mcp",
+      "headersHelper": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bq-mcp-headers.ps1"
+    }
+  }
+}

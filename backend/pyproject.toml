@@ -1,0 +1,29 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Ella Baché analytics dashboard API (FastAPI + BigQuery)"
+requires-python = ">=3.13"
+dependencies = [
+    "cachetools>=8.0.2",
+    "fastapi[standard]>=0.165.0",
+    "google-cloud-bigquery>=3.47.0",
+    "pydantic-settings>=2.16.3",
+    "tzdata>=2026.6",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: queries real BigQuery; runs only when RUN_INTEGRATION=1"]

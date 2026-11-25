@@ -1,0 +1,80 @@
+import { Info } from 'lucide-react'
+import HeroMetric from '../../components/HeroMetric.jsx'
+import KpiCard, { KpiGrid } from '../../components/KpiCard.jsx'
+import SectionTitle from '../../components/SectionTitle.jsx'
+import { ErrorBlock, LoadingBlock } from '../../components/StateViews.jsx'
+import { formatChange, formatMoney } from '../../utils/format.js'
+import { KPI_SECTIONS } from './pageConfig.js'
+
+// Hero block (headline revenue) on the left, a hairline grid of six figures on the right.
+function KpiSection({ config, data }) {
+  const hero = data[config.hero.key]
+  const aov = data.aov
+  // Last year's revenue is already in the chip and the bars, so only AOV is added here.
+  const extras = [
+    {
+      label: config.aovLabel,
+      value: formatMoney(aov.value),
+      note: aov.change === null ? null : `${formatChange(aov.change)} vs last year`,
+    },
+  ]
+
+  return (
+    <section>
+      <SectionTitle title={config.title} note={config.note} />
+      {/* Hero beside the grid only on wide screens (the sidebar takes 240px); stacked below that. */}
+      <div className="grid gap-4 xl:grid-cols-12">
+        <HeroMetric
+          className="xl:col-span-4"
+          label={config.hero.label}
+          kpi={hero}
+          format={formatMoney}
+          variant={config.variant}
+          extras={extras}
+        />
+        <KpiGrid className="grid-cols-2 md:grid-cols-3 xl:col-span-8">
+          {config.cells.map((cell) => (
+            <KpiCard key={cell.key} label={cell.label} kpi={data[cell.key]} format={cell.format} icon={cell.icon} />
+          ))}
+        </KpiGrid>
+      </div>
+    </section>
+  )
+}
+
+// Small notes from the API (e.g. why the period stops a day early), in one quiet panel.
+function Notes({ notes }) {
+  return (
+    <ul className="space-y-1 rounded-card border border-line bg-card px-4 py-3 text-xs text-body">
+      {notes.map((note) => (
+        <li key={note} className="flex gap-1.5">
+          <Info size={13} aria-hidden="true" className="mt-px shrink-0 text-subtle" />
+          {note}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export default function KpiSections({ query }) {
+  if (query.isPending) {
+    return (
+      <div className="grid gap-4 xl:grid-cols-12">
+        <LoadingBlock height="h-72 xl:col-span-4" />
+        <LoadingBlock height="h-72 xl:col-span-8" />
+      </div>
+    )
+  }
+  if (query.isError) return <ErrorBlock error={query.error} onRetry={query.refetch} />
+
+  // While new numbers load, keep the old ones visible but dimmed (no flashing).
+  const refreshing = query.isFetching
+  return (
+    <div className={`theme-fade space-y-10 ${refreshing ? 'opacity-50' : ''}`} aria-busy={refreshing}>
+      <Notes notes={query.data.notes} />
+      {KPI_SECTIONS.map((config) => (
+        <KpiSection key={config.id} config={config} data={query.data[config.id]} />
+      ))}
+    </div>
+  )
+}

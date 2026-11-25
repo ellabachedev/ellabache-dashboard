@@ -1,0 +1,17 @@
+{
+  "enabledMcpjsonServers": ["bigquery"],
+  "permissions": {
+    "allow": [
+      "mcp__bigquery__list_dataset_ids",
+      "mcp__bigquery__get_dataset_info",
+      "mcp__bigquery__list_table_ids",
+      "mcp__bigquery__get_table_info"
+    ],
+    "ask": [
+      "mcp__bigquery__execute_sql_readonly"
+    ],
+    "deny": [
+      "mcp__bigquery__execute_sql"
+    ]
+  }
+}

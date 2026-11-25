@@ -1,0 +1,71 @@
+/*
+ * Motion: small, quick and purposeful. Everything here switches off for people who set
+ * "reduce motion" on their computer.
+ *
+ *  .animate-in   section fades up as the page loads (set --delay for a gentle stagger)
+ *  .bar-grow     a bar grows from zero to its length when it first appears
+ *  .hover-lift   a card rises 2px with a soft shadow on hover
+ *  .theme-fade   colours cross-fade when switching light / dark
+ */
+@keyframes eb-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes eb-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* "backwards" (not "both"): the animation stops applying once it ends. Otherwise each block
+     would stay in its own layer and trap dropdown menus underneath the next block. */
+  .animate-in {
+    animation: eb-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .bar-grow {
+    transform-origin: left center;
+    animation: eb-grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .hover-lift {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--eb-lift-shadow);
+  }
+
+  body,
+  .theme-fade {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  /* An element can both lift and cross-fade: keep both sets of transitions. */
+  .theme-fade.hover-lift {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+}

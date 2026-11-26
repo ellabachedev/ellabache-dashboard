@@ -3,6 +3,16 @@
 @import './theme/buttons.css';
 @import './theme/motion.css';
 
+/* "wide:" = wide screen (xl, 1280px+) AND the sidebar is open (Layout sets data-sidebar).
+   Used inside the sidebar so collapsing turns it into the icon rail. */
+@custom-variant wide {
+  @media (width >= 80rem) {
+    &:where([data-sidebar='expanded'] *) {
+      @slot;
+    }
+  }
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -10,7 +20,7 @@ body {
   color: var(--eb-body);
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  line-height: 1.45;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   /* Optical sizing: the browser picks display shapes for big text, text shapes for small text */
   font-optical-sizing: auto;
@@ -24,7 +34,43 @@ h3 {
   text-wrap: balance;
 }
 
+/* Selected text in the brand navy tint */
+::selection {
+  background: color-mix(in srgb, var(--eb-accent) 22%, transparent);
+}
+
 /* Numbers that line up in columns (tables, axis ticks). Not for big standalone figures. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Display font (Plus Jakarta Sans) for headings and big numbers; it has its own shapes, so
+   Inter's feature switches are turned off here. */
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: normal;
+}
+
+/* The standard panel (Polaris card): white, 12px corners, bevel shadow instead of a border. */
+.card-surface {
+  background: var(--eb-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--eb-card-shadow);
+}
+
+/* Cards that respond to hover: a deeper shadow and a 2px rise. */
+.card-hover {
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.card-hover:hover {
+  box-shadow: var(--eb-card-shadow-hover);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-hover:hover {
+    transform: translateY(-2px);
+  }
+}
+
+

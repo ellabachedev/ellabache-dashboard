@@ -1,12 +1,13 @@
-import { CalendarDays, SlidersHorizontal } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { datePresets } from '../utils/dates.js'
+import { formatDate } from '../utils/format.js'
 import Button from './Button.jsx'
 import MultiSelect from './MultiSelect.jsx'
 
-// Segmented control for quick periods: a soft track with the active option raised on top.
+// Quick periods as joined buttons (Polaris segmented ButtonGroup). The selected one looks pressed.
 function PeriodSwitch({ filters, onDateChange }) {
   return (
-    <div role="group" aria-label="Quick date range" className="grid grid-cols-2 gap-1 rounded-lg bg-raised p-1 sm:flex sm:gap-0">
+    <div role="group" aria-label="Quick date range" className="btn-group btn-group-grid">
       {datePresets().map((preset) => {
         const active = preset.start === filters.start_date && preset.end === filters.end_date
         return (
@@ -15,12 +16,7 @@ function PeriodSwitch({ filters, onDateChange }) {
             type="button"
             aria-pressed={active}
             onClick={() => onDateChange(preset.start, preset.end)}
-            // Active option looks like a raised secondary button sitting on the track.
-            className={`h-7 whitespace-nowrap rounded-md px-3 text-sm transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-              active
-                ? 'bg-[var(--eb-btn-secondary-bg)] font-semibold text-heading shadow-[var(--eb-btn-secondary-shadow)]'
-                : 'text-body hover:bg-card/60 hover:text-heading'
-            }`}
+            className={`btn btn-secondary ${active ? 'is-pressed' : ''}`}
           >
             {preset.label}
           </button>
@@ -30,51 +26,82 @@ function PeriodSwitch({ filters, onDateChange }) {
   )
 }
 
-// Exact dates as one compact field: [calendar] from → to.
-function DateRange({ filters, onDateChange }) {
-  const dateInput =
-    'h-7 min-w-0 flex-1 rounded bg-transparent px-1 text-sm text-heading focus:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:flex-none'
+// Open the browser's calendar. Wrapped in try/catch: some browsers refuse outside a direct click.
+function openPicker(input) {
+  try {
+    input.showPicker?.()
+  } catch {
+    // The browser opens its own picker instead (or the user can type the date).
+  }
+}
+
+// One date as a button showing "1 Nov" or "25 Nov 2026". The real date input sits invisibly on
+// top, so a click (or Enter / Space) opens the browser's calendar.
+function DateField({ label, value, text, min, max, onChange, icon = false }) {
   return (
-    <div className="flex h-9 w-full items-center gap-1 rounded-lg border border-line bg-card px-2.5 shadow-[var(--eb-input-shadow)] transition-colors focus-within:border-accent hover:border-subtle sm:w-auto">
-      <CalendarDays size={15} aria-hidden="true" className="text-subtle" />
+    <label className="btn btn-secondary focus-within:outline-2 focus-within:outline-accent">
+      {icon && <CalendarDays size={14} aria-hidden="true" className="text-subtle" />}
+      {text}
       <input
         type="date"
-        aria-label="From date"
-        value={filters.start_date}
-        max={filters.end_date}
-        onChange={(event) => onDateChange(event.target.value, filters.end_date)}
-        className={dateInput}
+        aria-label={label}
+        value={value}
+        min={min}
+        max={max}
+        // An emptied field is ignored, so the range always has both dates.
+        onChange={(event) => event.target.value && onChange(event.target.value)}
+        onClick={(event) => openPicker(event.currentTarget)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            openPicker(event.currentTarget)
+          }
+        }}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
       />
-      <span aria-hidden="true" className="text-subtle">→</span>
-      <input
-        type="date"
-        aria-label="To date"
+    </label>
+  )
+}
+
+// Exact dates as two joined buttons: [calendar 1 Nov | 25 Nov 2026].
+// The year shows once when both dates are in the same year.
+function DateRange({ filters, onDateChange }) {
+  const sameYear = filters.start_date.slice(0, 4) === filters.end_date.slice(0, 4)
+  const startText = sameYear ? formatDate(filters.start_date).replace(/ \d{4}$/, '') : formatDate(filters.start_date)
+  return (
+    <div role="group" aria-label="Date range" className="btn-group">
+      <DateField
+        icon
+        label="From date"
+        value={filters.start_date}
+        text={startText}
+        max={filters.end_date}
+        onChange={(start) => onDateChange(start, filters.end_date)}
+      />
+      <DateField
+        label="To date"
         value={filters.end_date}
+        text={formatDate(filters.end_date)}
         min={filters.start_date}
-        onChange={(event) => onDateChange(filters.start_date, event.target.value)}
-        className={dateInput}
+        onChange={(end) => onDateChange(filters.start_date, end)}
       />
     </div>
   )
 }
 
-// One toolbar above everything it controls: period, exact dates, then a chip per filter.
+// One quiet toolbar above everything it controls: period + exact dates, then a pill per filter.
 // fields: [{ name: 'state', label: 'State' }, ...]; options: { state: ['NSW', ...] }.
 export default function FilterBar({ filters, fields, options, onFilterChange, onDateChange, onClear }) {
   const activeCount = fields.filter((field) => filters[field.name].length > 0).length
 
   return (
-    <section aria-label="Filters" className="theme-fade rounded-card border border-line bg-card p-3">
-      <div className="flex flex-wrap items-center gap-3">
+    <section aria-label="Filters" className="theme-fade card-surface space-y-3 p-3">
+      <div className="flex flex-wrap items-center gap-2">
         <PeriodSwitch filters={filters} onDateChange={onDateChange} />
         <DateRange filters={filters} onDateChange={onDateChange} />
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-        <span className="mr-1 flex items-center gap-1.5 text-xs font-medium text-body">
-          <SlidersHorizontal size={14} aria-hidden="true" />
-          Filters
-        </span>
+      <div className="flex flex-wrap items-center gap-1.5">
         {fields.map((field) => (
           <MultiSelect
             key={field.name}
@@ -85,7 +112,7 @@ export default function FilterBar({ filters, fields, options, onFilterChange, on
           />
         ))}
         {activeCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={onClear} className="ml-auto">
+          <Button variant="ghost" size="sm" onClick={onClear}>
             Clear all
           </Button>
         )}

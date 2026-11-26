@@ -8,22 +8,19 @@ function BarCell({ value, max, text }) {
   const width = max > 0 ? Math.max(2, (value / max) * 100) : 0
   return (
     <span className="flex items-center justify-end gap-3">
-      <span aria-hidden="true" className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-raised xl:block">
-        <span className="bar-grow block h-full rounded-full bg-accent" style={{ width: `${width}%` }} />
+      <span aria-hidden="true" className="hidden h-2 w-28 overflow-hidden rounded-full bg-raised lg:block">
+        <span className="bar-grow bg-accent-gradient block h-full rounded-full" style={{ width: `${width}%` }} />
       </span>
       <span>{text}</span>
     </span>
   )
 }
 
-// Rank badge: the top three stand out in the accent colour.
+// Rank number: the top three in bold, the rest in grey.
 function Rank({ n }) {
-  const top = n <= 3
   return (
     <span
-      className={`tabular inline-flex h-6 min-w-6 items-center justify-center rounded-md px-1.5 text-xs font-semibold ${
-        top ? 'bg-accent-subtle text-accent-ink' : 'text-body'
-      }`}
+      className={`tabular inline-flex min-w-6 justify-center text-xs ${n <= 3 ? 'font-bold text-heading' : 'text-subtle'}`}
     >
       {n}
     </span>
@@ -34,7 +31,7 @@ function Rank({ n }) {
 // toggles the sort (numbers start high-to-low, names A–Z).
 function HeaderCell({ col, sort }) {
   const align = col.numeric ? 'text-right' : ''
-  const base = `px-4 py-2.5 font-medium xl:px-6 ${align}`
+  const base = `px-4 py-3 font-semibold xl:px-6 ${align}`
   if (!sort || !col.sortable) {
     return (
       <th scope="col" className={base}>
@@ -77,9 +74,9 @@ export default function DataTable({ columns, rows, rowKey, paging, sort, showRan
       <div className="overflow-x-auto">
         <table className="w-full min-w-[560px] whitespace-nowrap text-sm">
           <thead>
-            <tr className="bg-raised text-left text-xs font-medium text-body">
+            <tr className="border-y border-line bg-raised/70 text-left text-[0.6875rem] font-semibold uppercase tracking-wider text-subtle">
               {showRank && (
-                <th scope="col" className="w-14 py-2.5 pl-6 pr-2 font-medium">
+                <th scope="col" className="w-16 py-3 pl-6 pr-2 font-semibold">
                   Rank
                 </th>
               )}
@@ -90,9 +87,9 @@ export default function DataTable({ columns, rows, rowKey, paging, sort, showRan
           </thead>
           <tbody className="divide-y divide-line">
             {rows.map((row, index) => (
-              <tr key={rowKey(row, index)} className="transition-colors hover:bg-raised/60">
+              <tr key={rowKey(row, index)} className="transition-colors hover:bg-accent-subtle/40">
                 {showRank && (
-                  <td className="py-3 pl-6 pr-2">
+                  <td className="py-3.5 pl-6 pr-2">
                     <Rank n={offset + index + 1} />
                   </td>
                 )}
@@ -102,8 +99,8 @@ export default function DataTable({ columns, rows, rowKey, paging, sort, showRan
                   return (
                     <td
                       key={col.key}
-                      className={`px-4 py-3 xl:px-6 ${col.numeric ? 'tabular text-right text-heading' : ''} ${
-                        first ? 'font-medium text-heading' : ''
+                      className={`px-4 py-3.5 xl:px-6 ${col.numeric ? 'tabular text-right text-heading' : ''} ${
+                        first ? 'font-semibold text-heading' : ''
                       }`}
                     >
                       {col.bar ? <BarCell value={row[col.key]} max={maxOf(rows, col.key)} text={text} /> : text}

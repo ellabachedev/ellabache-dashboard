@@ -5,6 +5,8 @@ import App from './App.jsx'
 // Inter variable font with optical sizes: large text automatically uses the tighter "display"
 // letter shapes, small text the more open ones. Bundled with the app (no request to Google Fonts).
 import '@fontsource-variable/inter/opsz.css'
+// Plus Jakarta Sans: the display font for headings and big numbers (also bundled, no Google request).
+import '@fontsource-variable/plus-jakarta-sans/wght.css'
 import './index.css'
 import ThemeProvider from './theme/ThemeProvider.jsx'
 

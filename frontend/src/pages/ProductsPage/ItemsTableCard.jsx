@@ -1,3 +1,4 @@
+import { CalendarDays, Layers } from 'lucide-react'
 import { useState } from 'react'
 import ChartCard from '../../components/ChartCard.jsx'
 import DataTable from '../../components/DataTable.jsx'
@@ -5,11 +6,17 @@ import SearchInput from '../../components/SearchInput.jsx'
 import SectionTitle from '../../components/SectionTitle.jsx'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue.js'
 import { formatCount, formatDateRange } from '../../utils/format.js'
-import { ITEMS_PAGE_SIZE } from './pageConfig.js'
+import { ITEMS_PAGE_SIZE, SOURCE_TAG } from './pageConfig.js'
 import { useProductItems } from './useProductsQueries.js'
 
+// Whole dollars in the table: cents add noise when comparing thousands of dollars.
 const money = (value) =>
-  value.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', currencyDisplay: 'narrowSymbol' })
+  value.toLocaleString('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    currencyDisplay: 'narrowSymbol',
+    maximumFractionDigits: 0,
+  })
 
 const COLUMNS = [
   { key: 'item_name', label: 'Item name', sortable: true },
@@ -44,10 +51,17 @@ export default function ItemsTableCard({ filters }) {
 
   return (
     <section>
-      <SectionTitle title="Product performance" note="Every product line ranked · sort any column or search by name" />
+      <SectionTitle
+        title="Product performance"
+        note="Every product line ranked. Click a column to sort, or search by name."
+        tags={[SOURCE_TAG]}
+      />
       <ChartCard
         title="Revenue by item"
-        subtitle={`All product lines · ${period}`}
+        tags={[
+          { label: period, icon: CalendarDays },
+          { label: 'All product lines', icon: Layers },
+        ]}
         query={query}
         isEmpty={(data) => data.total_rows === 0}
         emptyMessage={search ? `No items match “${search}”.` : 'No items for these filters.'}

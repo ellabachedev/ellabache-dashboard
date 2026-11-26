@@ -42,7 +42,7 @@ NEVER
 | Backend | Python 3.13 (uv), FastAPI, Pydantic, `google-cloud-bigquery`, `cachetools` |
 | Frontend | React + plain JavaScript (JSX) + Vite, React Router, TanStack Query, TanStack Table |
 | Charts | Apache ECharts (or Recharts) |
-| Styling | Tailwind CSS v4 (flat Swiss style, light and dark mode, see section 7), Inter Variable (`@fontsource-variable/inter`), `lucide-react` icons; all theme tokens in `frontend/src/theme/` |
+| Styling | Tailwind CSS v4 (modern calm navy style, light and dark mode, see section 7), Plus Jakarta Sans + Inter Variable (`@fontsource-variable/*`), `lucide-react` icons; all theme tokens in `frontend/src/theme/` |
 | Hosting | One Cloud Run service in `australia-southeast1` (FastAPI also serves the built React files) |
 | Auth | Cloud Run IAP; team members added by email |
 | Secrets | Google Secret Manager |
@@ -203,50 +203,54 @@ A page never calls BigQuery or an API. A router never contains SQL. React never 
 
 ## 7. UI rules
 
-**Style: flat Swiss design** (owner's choice, 25 Nov 2026). Black, white and greys with one vibrant
-electric-blue accent; strict grid; Inter (bold, tight headings); hairline rules; **no shadows, no
-gradients**, soft 12px corners. Headline numbers sit on solid "hero" blocks. Official Ella Baché brand
-colours and logo are still [ASK]; change them only in `frontend/src/theme/tokens.css`.
+**Style: modern, calm SaaS dashboard in Ella Baché navy** (owner's choice, 25 Nov 2026: "not too colourful").
+Brand navy `#001C3A` and the official wordmark come from ellabache.com.au (`components/BrandLogo.jsx`, also
+`public/ellabache-logo.svg`; it uses `currentColor`). Soft grey page, white cards (`card-surface`: hairline edge,
+soft shadow, 16px corners), navy hero blocks, **minimal** (owner's choice, 25 Nov 2026: no icon tiles, glows or decorative washes;
+small plain icons only beside KPI labels and in tags), and **meta tags** (`Tag` / `TagList` pills for period, scope, source) instead of long grey "a · b · c"
+caption lines. Use colour sparingly: navy for brand and data, green/red only for good/bad changes.
+Change colours only in `frontend/src/theme/tokens.css`.
 
 **Light and dark mode** (both required on every page). The switch is in each page header; the choice is
 saved in the browser, and the first visit follows the computer's setting. Palettes are CSS variables
-(`--eb-*`) in `tokens.css`, mapped to Tailwind names (`bg-card`, `text-heading` …), so components never
-mention a theme: use the token classes and both modes work.
+(`--eb-*`) in `tokens.css`, mapped to Tailwind names (`bg-card`, `text-heading`, `shadow-card` …), so
+components never mention a theme: use the token classes and both modes work.
 
 | Token | Light | Dark |
 |---|---|---|
-| page / card / raised | `#F4F4F5` / `#FFFFFF` / `#F4F4F5` | `#09090B` / `#111113` / `#18181B` |
-| hairline / strong rule (section tops, table head) | `#E4E4E7` / `#09090B` | `#27272A` / `#FAFAFA` |
-| heading / body text (high contrast) | `#09090B` / `#3F3F46` | `#FAFAFA` / `#C4C4CC` |
-| subtle (icons, placeholders, small hints) | `#71717A` | `#8B8B95` |
-| sidebar text / sidebar muted | `#D4D4D8` / `#8B8B95` | same |
-| accent (electric blue: bars, section numbers, links, focus) | `#2F52F5` | `#5D7CFF` |
-| hero Total block / text | `#09090B` / white | `#FAFAFA` / `#09090B` (inverted) |
-| hero Products block / text | `#2F52F5` / white | `#3D5EFF` / white |
+| page / card / raised | `#F1F2F4` / `#FFFFFF` / `#F6F7F9` (cool greys, Polaris lightness) | `#0A0E14` / `#121821` / `#19212C` |
+| hairline / strong line | `#E3E5E9` / `#CDD1D8` | `#232C38` / `#34404F` |
+| heading / body / subtle text | `#0F1B2D` (navy-black) / `#424A57` / `#5D6675` | `#F2F5F9` / `#C2CAD5` / `#8A95A5` |
+| accent → accent-2 (bars, links, focus, tile icons, selected period) | `#001C3A` → `#0D3461` (true brand navy) | `#7FA8DA` → `#5B93D6` |
+| hero Total / Products (white text) | `#001C3A`→`#062A52` / `#1B4470`→`#2B5A8A` | `#0B2240`→`#12345E` / `#17375C`→`#224A76` |
 | positive / negative (change chips only) | `#0A8A4A` / `#D92D20` | `#34C37A` / `#F2544B` |
-| sidebar (black in both modes) | `#09090B` | `#000000` |
+| sidebar / selected row | `#EBEDF0` / white key, navy text | `#0D1219` / `#1F2733` key, white text |
 
+Text on accent fills uses `--eb-btn-primary-ink` (white in light mode, navy in dark mode) so it stays readable.
 Each status colour has a tint (`*-subtle`) and a readable text-on-tint (`*-ink`), chosen per mode to pass 4.5:1.
-Chart categorical series, fixed order, validated with the dataviz skill's checker (all six checks pass):
-light `#2F52F5, #E4720B, #0F9A6C, #9B45E6, #E0427E, #7D8F12`; dark `#5D7CFF, #D0731F, #26A077, #A774F0, #E05A8B, #86992B`.
-One-series charts use series 1 only; "Others" / unknown buckets use `--eb-chart-muted` (grey).
+Chart categorical series, fixed order, validated with the dataviz skill's checker (all checks pass):
+light `#245C99, #E4720B, #0F9A6C, #9B45E6, #E0427E, #7D8F12`; dark `#5B93D6, #D0731F, #26A077, #A774F0, #E05A8B, #86992B`.
+One-series charts use series 1 only (an accent gradient on one-series bars is fine); "Others" / unknown buckets use `--eb-chart-muted` (grey).
 Charts read colours from the live CSS variables (`theme/chartColors.js`) and redraw when the theme changes.
-Font: Inter Variable with optical sizing (`@fontsource-variable/inter/opsz.css`): big text automatically
-uses the tighter display shapes. Features `cv11` + `ss01`. Big standalone numbers bold with tight tracking and proportional digits;
-tabular digits only in tables. Icons: `lucide-react`, thin and neutral (colour carries meaning, not decoration).
+Fonts: **Plus Jakarta Sans Variable** (`.font-display`) for page/section/card titles and big numbers;
+**Inter Variable** (optical sizing, `cv11` + `ss01`) for everything else. Both bundled via `@fontsource-variable`.
+Big standalone numbers bold/extrabold with tight tracking and proportional digits; tabular digits only in
+tables. Icons: `lucide-react`.
 
-- Sidebar (black, both modes): blue logo tile + "Ella Baché / Analytics", grouped menu (uppercase group labels), active item = soft white highlight with a blue marker on the left, unbuilt pages show a "Soon" pill, user block at the bottom. Full width (256px) from `xl`; **icon rail (72px) on laptops (`lg`)** with labels as tooltips; hidden on phones (brand bar instead).
-- Page top: a **sticky, see-through top bar** (breadcrumb "Section › Page" on the left; "Updated …" pill and theme switch on the right), then the big title (48px, bold, tight) with the compared period underneath → filter toolbar → sections.
+- Sidebar (minimal, Shopify admin style, owner's choice 25 Nov 2026): light cool-grey panel `#EBEDF0` (`#0D1219` in dark mode) with a hairline edge; navy Ella Baché wordmark (white in dark mode) + small "ANALYTICS" label, or a navy "EB" tile on the icon rail; quiet sentence-case group labels; rows `.nav-item` are flat until hovered, unbuilt pages dimmed ("coming soon" only in the tooltip); **current page `.is-current` = white key with the Polaris card bevel and navy text/icon** (dark mode: raised dark key, white text); 1px inset press. Collapse button and a plain user row (navy avatar, no card) at the bottom. Colours: `--eb-sidebar-*` tokens. Full width (256px) from `xl` with Collapse / Expand (saved as `eb-sidebar`); icon rail (76px) on laptops; phones get a light brand bar. Inside the sidebar use the `wide:` variant (`index.css`) instead of `xl:`.
+- Page top: a **sticky, frosted top bar** (breadcrumb "Section › Page" on the left; live "Updated …" pill and theme switch on the right), then the big title (44px, Plus Jakarta Sans extrabold) + one-sentence subtitle + period tags (this period in accent, "vs …" neutral) → filter toolbar → sections. No icon tile next to the title.
 - Change chips read "▼ −9.3% from 25,791"; the section description says "changes vs same dates last year", so the chip line never wraps.
-- Filter toolbar (`FilterBar`): segmented period switch (soft track, active option raised) + one compact date-range field; below it one **filter chip** per filter (`MultiSelect`: dashed "+ State" when empty, filled "State | NSW +1 ×" when active, checkbox menu with search), "Clear all" on the right.
-- Sections start with `SectionTitle`: semibold title + one-line description underneath. No heavy rules.
-- KPI sections: `HeroMetric` (solid block, 4 of 12 columns: headline value, change chip, this-year vs last-year bars, AOV) beside a `KpiGrid` of `KpiCard` cells (8 columns, cells separated by 1px hairlines; label row reserves two lines so values align).
-- Ranked categories: `BarList` (HTML, not canvas): each row has a soft accent bar behind the label, value + share on the right; "Others" / unknown rows in grey. Use ECharts only for real charts (trends → line).
-- Tables: `DataTable` inside a `flush` `ChartCard`: soft grey header row, divider lines, rank badges (top 3 in accent; only when sorted by the main measure), first column medium weight, `bar: true` on the main measure, `sortable` headers (sort is done by the backend from a whitelist), a `SearchInput` in the card's `actions` (debounced, backend search), "1–15 of N items" + Previous / Next.
+- Filter toolbar (`FilterBar`), minimal, Shopify-native: one `card-surface` with two rows and no label or divider. Row 1: quick periods as a Polaris segmented `.btn-group` (selected = `.is-pressed`, navy / white fill) that becomes a 2 × 2 grid on phones (`.btn-group-grid`) + the date range as a second `.btn-group` of two date buttons "[calendar] 1 Nov | 25 Nov 2026" (year once when shared; the native date input sits invisibly on each and opens the calendar on click / Enter / Space). Row 2: one Polaris **filter pill** per filter (`MultiSelect`, `.pill`): dashed "+ State ⌄" when empty, solid "State: NSW +1 ⌄ ×" when active, checkbox menu with search; "Clear all" as a ghost button. Data notes from the API (`NoteList`, e.g. "Period ends 24 Nov…") sit directly under the filter card, next to the dates they explain.
+- Sections start with `SectionTitle`: bold title + one plain sentence + `tags` (scope, exclusions, source such as `SOURCE_TAG` = BigQuery). Tags are quiet grey text with a small icon (no box); only `tone: 'accent'` (the page period) is a soft pill. Chart panels (`ChartCard`) take `tags` the same way; put the period in a tag, not in a caption. No icon tiles.
+- KPI sections: `HeroMetric` (navy block, 4 of 12 columns: label, headline value, change chip, this-year vs last-year bars, AOV in a see-through tile) beside a `KpiGrid` of separate `KpiCard`s (8 columns, 16px gaps). Each card: small plain icon + label (full width, reserves two lines), value, then the change chip "↘ −4.2% from 24,674" underneath. Never put the chip beside the label (it squeezes the label).
+- Ranked categories: `BarList` (HTML, not canvas): each row is label + value + share on one line with a slim 6px navy bar underneath (no rank badges; the order shows rank); breakdown panels end with a "Total product revenue" line pinned to the card bottom, so cards in a row line up; "Others" / unknown rows in grey. Use ECharts only for real charts (trends → line; ordered categories such as gift card values → columns).
+- ECharts: always through `components/EChart.jsx` (loads only the parts used, SVG renderer, follows light/dark, resizes with its panel, `tooltipStyle(colors)` from `theme/chartColors.js` for themed tooltips); load chart components with `React.lazy` so ECharts downloads separately. Pass `buildOption(colors)` wrapped in `useCallback`. One-series charts use `colors.series[0]`; 4px rounded bar tops; axis money without decimals ($80K); add an `sr-only` list of the values.
+- Table money: whole dollars (`$98,000`), no cents.
+- Tables: `DataTable` inside a `flush` `ChartCard`: small uppercase header row on soft grey, divider lines, plain rank numbers (top 3 bold; only when sorted by the main measure), first column medium weight, `bar: true` on the main measure, `sortable` headers (sort is done by the backend from a whitelist), a `SearchInput` in the card's `actions` (debounced, backend search), "1–15 of N items" + Previous / Next.
 - Filters live in the page address (`?start_date=…&state=NSW`), so any view can be bookmarked or shared.
-- Panels: `bg-card`, `rounded-card` (12px), 1px `border-line`, no shadow (only floating menus have one).
-- **Buttons: always `components/Button.jsx`** (Shopify Polaris-style, owner's choice 25 Nov 2026; styles in `theme/buttons.css`, colours in `tokens.css`): `primary` = solid black (white in dark mode) for the main action, `secondary` = white for everyday actions, `ghost` = text-only; sizes `md`/`sm`; `icon` for square icon buttons (with `aria-label`). Soft bevel (inner highlight + hairline edge), hover tints the face, pressing moves it down 1px. These bevels are the one allowed exception to "no shadows". Inputs get the subtle inset `--eb-input-shadow`; the segmented switch's active option uses the secondary-button look.
-- **Motion** (`theme/motion.css`, all off when the user prefers reduced motion): blocks fade up in turn on load (`Reveal step={n}`, 60 ms apart); bars grow from zero (`bar-grow`); hero blocks rise 2px on hover (`hover-lift`); KPI cells tint and their icon turns accent on hover; menu icons nudge right; bar-list rows deepen on hover; chips lift 1px. Use `animation-fill-mode: backwards` (never `both`), or finished animations trap dropdowns under the next block.
+- Panels: `card-surface` = Polaris card (white, 12px `rounded-card`, bevel shadow `--eb-card-shadow`, **no border**); add `card-hover` for cards that rise on hover.
+- **Controls follow Shopify Polaris** (owner's choice, 25 Nov 2026; values copied from polaris-react `Button` / `FilterPill` and polaris-tokens `shadow.ts`, styles in `theme/buttons.css`, colours in `tokens.css`). Buttons: always `components/Button.jsx`: `primary` = navy with Polaris' top-light gradient (light key in dark mode), `secondary` = white with the Polaris bevel, `ghost` = Polaris tertiary; `md` 28px / `sm` 24px, 8px corners, 12px semibold text; `icon` for square icon buttons (with `aria-label`). **Pressing works like Polaris: no movement, the bevel flips to a soft 1px inset shadow** (half Polaris' depth, owner's choice) so the button looks gently pushed in. **Selected state** (`.is-pressed`, e.g. the active period) is filled with the brand colour: navy in light mode, white in dark mode; a plain click on an unselected button only greys briefly. Other classes: `.btn-group` (segmented, `.is-pressed`), `.pill` (filter pill), `.field` (text input: 1px `--eb-input-border`, 8px corners, navy focus outline), `.nav-item` / `.is-current` (sidebar rows: hover tint, current page bevel, inset on press).
+- **Motion** (`theme/motion.css`, all off when the user prefers reduced motion): blocks fade up in turn on load (`Reveal step={n}`, 60 ms apart); bars grow from zero (`bar-grow`); hero blocks rise 2px on hover (`hover-lift`); KPI cards rise with a deeper shadow (`card-hover`); the "Updated" dot pulses; menu icons nudge right; bar-list rows deepen on hover; chips lift 1px. Use `animation-fill-mode: backwards` (never `both`), or finished animations trap dropdowns under the next block.
 - Responsive grid (the sidebar takes 240px from `lg`, so content is narrower than the viewport). Check every page at 1440, 1024 and 390 px with `node e2e/screenshots.mjs <dir> "1440,1024,390"`, which also flags sideways overflow:
   - `xl` (≥1280): hero 4/12 beside KPI grid 8/12 (3 columns); 3 chart panels in a row.
   - `md`–`lg`: hero full width with its two halves side by side; KPI grid 3 columns; charts 2 columns, last panel spans both.
@@ -256,6 +260,7 @@ tabular digits only in tables. Icons: `lucide-react`, thin and neutral (colour c
 - KPI card: label, large value, "vs last year" chip with arrow **and** colour (never colour alone).
 - Bars start at zero. Do not truncate a line chart's axis unless it is labelled.
 - Title every chart with scope + period + source (e.g. "Online booking conversion rate — booking widget, GA4 — Jul 2026 onward; Nov = month to date").
+- Browser tab: navy "EB" favicon (`public/favicon.svg`), `theme-color` #001C3A; text selection uses the navy tint.
 - Mark partial months "to date". Show "Data updated …" on every page.
 - Number format: `$2.27M`, `22.2K`, `13.7%`, Australian locale, tabular figures, right-aligned.
 - Accessibility: text contrast ≥ 4.5:1, visible focus ring, charts readable in greyscale.

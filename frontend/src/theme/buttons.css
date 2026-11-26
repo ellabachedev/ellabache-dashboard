@@ -1,55 +1,68 @@
 /*
- * Buttons, Shopify Polaris-style: compact, rounded, with a soft bevel (light inner top edge,
- * darker inner bottom edge, hairline drop shadow). Hover tints the face; pressing pushes the
- * button down 1px and sinks the shadow inward. Colours come from tokens.css (light + dark).
+ * Controls in the Shopify Polaris style, built from Polaris' own values (polaris-react Button,
+ * FilterPill and polaris-tokens shadows). Colours come from tokens.css (light + dark).
  *
- * Use through components/Button.jsx: <Button variant="primary|secondary|ghost" size="sm|md" icon>.
+ * How Polaris buttons feel: a crisp "bevel" (light top edge, darker bottom edge). Hover tints the
+ * face; pressing flips the bevel inward (an inset shadow), so the button looks pushed into the page.
+ *
+ *   .btn + .btn-primary | .btn-secondary | .btn-ghost (Polaris "tertiary"), .btn-sm, .btn-icon
+ *       → use through components/Button.jsx
+ *   .btn-group        joined buttons (Polaris segmented ButtonGroup); add .is-pressed to the selected one;
+ *                     add .btn-group-grid to show 4 options as a 2 x 2 grid on phones
+ *                     (selected = brand fill: navy in light mode, white in dark mode)
+ *   .pill / .is-active   filter pill (Polaris Filters): dashed when empty, solid when a filter is on
+ *   .field            text input (Polaris TextField)
+ *   .nav-item / .is-current   sidebar row (current page = white key with navy text)
+ *   .sidebar-surface  the sidebar panel itself
  */
 @layer components {
   .btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.375rem;
-    height: 2rem;
+    gap: 0.25rem;
+    min-height: 1.75rem; /* Polaris medium: 28px */
     padding: 0 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    border-radius: 0.5rem; /* Polaris border-radius-200 */
+    font-size: 0.75rem;
+    font-weight: 550;
     line-height: 1;
     white-space: nowrap;
     user-select: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     transition:
-      background-color 0.15s ease,
-      box-shadow 0.15s ease,
-      color 0.15s ease,
-      transform 0.08s ease;
+      background 0.1s ease,
+      box-shadow 0.1s ease,
+      color 0.1s ease;
   }
   .btn:focus-visible {
     outline: 2px solid var(--eb-accent);
-    outline-offset: 2px;
-  }
-  .btn:active {
-    transform: translateY(1px);
+    outline-offset: 1px;
   }
   .btn:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
+    box-shadow: none;
     pointer-events: none;
   }
 
+  /* Primary: navy with Polaris' soft top-light gradient */
   .btn-primary {
-    background: var(--eb-btn-primary-bg);
+    background: var(--eb-btn-gradient), var(--eb-btn-primary-bg);
     color: var(--eb-btn-primary-ink);
     box-shadow: var(--eb-btn-primary-shadow);
   }
   .btn-primary:hover {
-    background: var(--eb-btn-primary-hover);
+    background: var(--eb-btn-gradient), var(--eb-btn-primary-hover);
+    box-shadow: var(--eb-btn-primary-shadow-hover);
   }
   .btn-primary:active {
+    background: var(--eb-btn-gradient), var(--eb-btn-primary-active);
     box-shadow: var(--eb-btn-primary-pressed);
   }
 
+  /* Secondary: white with the bevel */
   .btn-secondary {
     background: var(--eb-btn-secondary-bg);
     color: var(--eb-btn-secondary-ink);
@@ -57,39 +70,198 @@
   }
   .btn-secondary:hover {
     background: var(--eb-btn-secondary-hover);
+    box-shadow: var(--eb-btn-secondary-shadow-hover);
   }
   .btn-secondary:active {
+    background: var(--eb-btn-secondary-active);
     box-shadow: var(--eb-btn-secondary-pressed);
   }
+  /* Selected (switched on): filled with the brand colour, like a primary button */
+  .btn-secondary.is-pressed,
+  .btn-secondary.is-pressed:hover {
+    background: var(--eb-btn-gradient), var(--eb-btn-primary-bg);
+    color: var(--eb-btn-primary-ink);
+    box-shadow: var(--eb-btn-primary-pressed);
+  }
 
+  /* Ghost = Polaris tertiary: no fill until hovered */
   .btn-ghost {
     background: transparent;
-    color: var(--eb-body);
+    color: var(--eb-btn-secondary-ink);
   }
   .btn-ghost:hover {
-    background: var(--eb-raised);
-    color: var(--eb-heading);
+    background: var(--eb-btn-tertiary-hover);
+  }
+  .btn-ghost:active {
+    background: var(--eb-btn-tertiary-active);
   }
 
   .btn-sm {
-    height: 1.75rem;
-    padding: 0 0.625rem;
-    font-size: 0.75rem;
-    border-radius: 0.4375rem;
+    min-height: 1.5rem; /* Polaris micro: 24px */
+    padding: 0 0.5rem;
   }
   .btn-icon {
-    width: 2rem;
+    width: 1.75rem;
     padding: 0;
   }
   .btn-sm.btn-icon {
-    width: 1.75rem;
+    width: 1.5rem;
+  }
+
+  /* Segmented group: one bevel around joined buttons, thin dividers between them */
+  .btn-group {
+    display: inline-flex;
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    box-shadow: var(--eb-btn-secondary-shadow);
+    background: var(--eb-btn-secondary-bg);
+    scrollbar-width: none;
+  }
+  .btn-group > .btn {
+    flex-shrink: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .btn-group > .btn + .btn {
+    border-left: 1px solid var(--eb-line);
+  }
+  .btn-group > .btn:first-child {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+  /* Phones: .btn-group-grid turns the row into a 2 x 2 grid (1px gaps show as divider lines) */
+  @media (width < 40rem) {
+    .btn-group-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      width: 100%;
+      overflow: hidden;
+      background: var(--eb-line);
+    }
+    .btn-group-grid > .btn,
+    .btn-group-grid > .btn:first-child,
+    .btn-group-grid > .btn:last-child {
+      border-radius: 0;
+      background: var(--eb-btn-secondary-bg);
+    }
+    .btn-group-grid > .btn + .btn {
+      border-left: 0;
+    }
+    .btn-group-grid > .btn {
+      min-height: 2rem;
+    }
+  }
+  .btn-group > .btn:last-child {
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .btn-group > .btn:hover {
+    background: var(--eb-btn-secondary-hover);
+  }
+  .btn-group > .btn:active {
+    background: var(--eb-btn-secondary-active);
+    box-shadow: var(--eb-btn-secondary-pressed);
+  }
+  .btn-group > .btn.is-pressed,
+  .btn-group > .btn.is-pressed:hover {
+    background: var(--eb-btn-gradient), var(--eb-btn-primary-bg);
+    color: var(--eb-btn-primary-ink);
+    box-shadow: var(--eb-btn-primary-pressed);
+    font-weight: 600;
+  }
+  /* No divider line next to the filled segment */
+  .btn-group > .btn.is-pressed + .btn,
+  .btn-group > .btn + .btn.is-pressed {
+    border-left-color: transparent;
+  }
+
+  /* Filter pill (Polaris Filters): dashed when empty, solid border on hover and when active */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    border: 1px dashed var(--eb-pill-border);
+    border-radius: 0.5rem;
+    background: var(--eb-card);
+    color: var(--eb-heading);
+    font-size: 0.75rem;
+    transition:
+      background 0.1s ease,
+      border-color 0.1s ease;
+  }
+  .pill:hover {
+    border-style: solid;
+    background: transparent;
+  }
+  .pill:active,
+  .pill:has(> button:active) {
+    background: var(--eb-raised);
+  }
+  .pill.is-active {
+    border-style: solid;
+    background: var(--eb-card);
+  }
+
+  /* Text input (Polaris TextField) */
+  .field {
+    border: 1px solid var(--eb-input-border);
+    border-radius: 0.5rem;
+    background: var(--eb-card);
+    color: var(--eb-heading);
+    transition: border-color 0.1s ease;
+  }
+  .field:hover {
+    border-color: var(--eb-input-border-hover);
+  }
+  .field:focus,
+  .field:focus-within {
+    border-color: var(--eb-accent);
+    outline: 2px solid var(--eb-accent);
+    outline-offset: 1px;
+  }
+
+  /* Sidebar (Shopify admin style): rows are flat until hovered; the current page is a white key
+     with the Polaris card bevel and navy text. Colours: --eb-sidebar-* in tokens.css. */
+  .nav-item {
+    color: var(--eb-sidebar-text);
+    transition:
+      background 0.12s ease,
+      box-shadow 0.12s ease,
+      color 0.12s ease;
+  }
+  .nav-item:hover {
+    background: var(--eb-sidebar-raised);
+    color: var(--eb-heading);
+  }
+  .nav-item:active {
+    background: var(--eb-sidebar-raised);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12) inset;
+  }
+  .nav-item.is-current,
+  .nav-item.is-current:hover {
+    background: var(--eb-sidebar-active-bg);
+    color: var(--eb-sidebar-active-ink);
+    box-shadow: var(--eb-sidebar-active-shadow);
+  }
+  /* Press: the key sinks in gently (1px, same depth as the buttons) */
+  .nav-item.is-current:active {
+    background: var(--eb-sidebar-pressed);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.14) inset;
+  }
+
+  /* The sidebar panel: flat light grey with a hairline edge against the page */
+  .sidebar-surface {
+    background: var(--eb-sidebar);
+    box-shadow: -1px 0 0 0 var(--eb-sidebar-edge) inset;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .btn,
-  .btn:active {
+  .pill,
+  .field,
+  .nav-item {
     transition: none;
-    transform: none;
   }
 }

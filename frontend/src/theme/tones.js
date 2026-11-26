@@ -4,6 +4,7 @@ export const TONES = {
   neutral: { chip: 'bg-raised text-body' },
   success: { chip: 'bg-success-subtle text-success-ink' },
   danger: { chip: 'bg-danger-subtle text-danger-ink' },
-  // On a solid hero block: translucent white works on black, white and blue fills.
-  onHero: { chip: 'bg-current/10' },
+  // On a gradient hero block: translucent white works on dark and violet fills.
+  onHero: { chip: 'bg-white/15 backdrop-blur-sm' },
 }
+

@@ -1,39 +1,26 @@
 import ChangeChip from './ChangeChip.jsx'
 
-// One KPI cell for a flat grid: label, large value, change vs last year.
-// Place several inside <KpiGrid> so hairlines separate them (no card shadows).
+// One KPI card: label (with a small icon), large value, then the change chip and last year's value.
 export default function KpiCard({ label, kpi, format, icon: Icon }) {
   return (
-    // group: on hover the cell tints and its icon picks up the accent colour.
-    <div className="theme-fade group min-w-0 bg-card p-4 hover:bg-raised/50 sm:p-5">
-      {/* Label row reserves two lines so values line up even when a label wraps */}
-      <div className="flex min-h-10 items-start justify-between gap-2">
-        <p className="text-sm font-medium leading-5 text-body">{label}</p>
-        {Icon && (
-          <Icon
-            size={16}
-            strokeWidth={1.75}
-            aria-hidden="true"
-            className="mt-0.5 shrink-0 text-subtle transition-all duration-200 group-hover:text-accent-ink motion-safe:group-hover:scale-110"
-          />
-        )}
-      </div>
+    <div className="theme-fade card-surface card-hover group min-w-0 p-4 sm:p-5">
+      {/* Label reserves two lines so values line up even when a label wraps */}
+      <p className="flex min-h-10 items-start gap-2 text-sm font-medium leading-5 text-body">
+        {Icon && <Icon size={15} strokeWidth={1.75} aria-hidden="true" className="mt-0.5 shrink-0 text-subtle" />}
+        {label}
+      </p>
       {/* Proportional digits for big standalone numbers */}
-      <p className="mt-1 text-2xl font-bold leading-tight tracking-[-0.03em] text-heading sm:text-[1.875rem]">
+      <p className="font-display mt-1 text-2xl font-bold leading-tight tracking-[-0.03em] text-heading sm:text-[1.75rem]">
         {format(kpi.value)}
       </p>
-      <div className="mt-2">
+      <div className="mt-2.5">
         <ChangeChip change={kpi.change} previousText={format(kpi.previous)} />
       </div>
     </div>
   )
 }
 
-// Flat grid of KPI cells separated by 1px hairlines (the gap shows the border colour).
+// Grid of KPI cards with even gaps.
 export function KpiGrid({ children, className = '' }) {
-  return (
-    <div className={`theme-fade grid gap-px overflow-hidden rounded-card border border-line bg-line ${className}`}>
-      {children}
-    </div>
-  )
+  return <div className={`grid gap-4 ${className}`}>{children}</div>
 }

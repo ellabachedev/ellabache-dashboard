@@ -1,9 +1,11 @@
 /*
  * Design tokens: the only place CSS colours, fonts, radii and shadows are defined.
  *
- * Style: flat, Swiss (International Typographic Style). Black, white and greys, one vibrant
- * electric-blue accent, a strict grid, hairline rules, no shadows or gradients. Headline
- * numbers sit on solid "hero" blocks (black for Total, blue for Products).
+ * Style: minimal dashboard with Shopify Polaris-native components (owner's choice, 25 Nov 2026):
+ * Polaris neutrals, cards, buttons, filter pills and inputs, with Ella Bache navy (#001c3a, from
+ * ellabache.com.au) as the brand colour. Navy hero blocks; quiet meta tags instead of caption lines.
+ * Colour is used sparingly: navy for brand and data, green/red only for good/bad changes.
+ * Display font: Plus Jakarta Sans (headings, big numbers); text font: Inter.
  *
  * Two modes are plain CSS variables (--eb-*). <html data-theme> picks one. The @theme block
  * maps them to Tailwind names (bg-card, text-heading …), so components never mention a theme.
@@ -12,28 +14,30 @@
 :root,
 [data-theme='light'] {
   color-scheme: light;
-  --eb-page: #f3f3f4;
+  --eb-page: #f1f2f4;
   --eb-card: #ffffff;
-  --eb-raised: #f4f4f5; /* inputs hover, table hover */
-  --eb-line: #e2e2e5;   /* hairlines */
-  --eb-strong-line: #09090b;
-  --eb-heading: #09090b;
-  --eb-body: #3f3f46;   /* higher contrast body text (~10:1 on white) */
-  --eb-subtle: #71717a; /* icons, placeholders; also passes 4.5:1 for small hints */
+  --eb-raised: #f6f7f9; /* inputs hover, table header, tracks */
+  --eb-line: #e3e5e9;   /* hairlines */
+  --eb-strong-line: #cdd1d8;
+  --eb-heading: #0f1b2d;
+  --eb-body: #424a57;   /* ~9:1 on white */
+  --eb-subtle: #5d6675; /* icons, placeholders; passes 4.5:1 for small hints */
 
-  --eb-accent: #2f52f5;        /* electric blue: the one vibrant colour */
-  --eb-accent-subtle: #eaeefe;
-  --eb-accent-ink: #2443d6;
+  --eb-accent: #001c3a;        /* Ella Bache dark navy (from ellabache.com.au) */
+  --eb-accent-2: #0d3461;      /* second stop of accent gradients */
+  --eb-accent-subtle: #ebeff5;
+  --eb-accent-ink: #001c3a;
 
-  /* Hero blocks: solid fills for the headline numbers */
-  --eb-hero-total: #09090b;
+  /* Hero blocks: navy fills behind the headline numbers (white text on both) */
+  --eb-hero-total: linear-gradient(135deg, #001c3a 0%, #062a52 100%);
   --eb-hero-total-ink: #ffffff;
-  --eb-hero-product: #2f52f5;
+  --eb-hero-product: linear-gradient(135deg, #1b4470 0%, #2b5a8a 100%);
   --eb-hero-product-ink: #ffffff;
+  --eb-hero-glow: rgba(255, 255, 255, 0.08);
 
   /* Status colours: only where colour MEANS good / bad */
   --eb-success: #0a8a4a;
-  --eb-success-subtle: #e6f6ed;
+  --eb-success-subtle: #e3f6ec;
   --eb-success-ink: #087a41;
   --eb-danger: #d92d20;
   --eb-danger-subtle: #fdeceb;
@@ -42,98 +46,149 @@
   --eb-warning-subtle: #fef4e6;
   --eb-warning-ink: #93370d;
 
-  --eb-sidebar: #09090b;
-  --eb-sidebar-text: #d4d4d8;  /* menu items: clear on black */
-  --eb-sidebar-muted: #8b8b95; /* group labels, "Soon" */
+
+  /* Sidebar: light cool grey like the Shopify admin nav; the current page is a white key */
+  --eb-sidebar: #ebedf0;
+  --eb-sidebar-raised: rgba(15, 27, 45, 0.05); /* hover */
+  --eb-sidebar-text: #1f2a37;  /* ~12:1 on the panel */
+  --eb-sidebar-muted: #4f5866; /* icons + group labels, ~6:1 */
+  --eb-sidebar-logo: #001c3a;                  /* wordmark + monogram tile: brand navy */
+  --eb-sidebar-edge: #c9ced6; /* clearly visible edge between sidebar and page */
+  --eb-sidebar-active-bg: #ffffff;
+  --eb-sidebar-active-ink: #001c3a;
+  --eb-sidebar-active-shadow: 0 1px 0 0 rgba(26, 26, 26, 0.07), 1px 0 0 0 rgba(0, 0, 0, 0.1) inset,
+    -1px 0 0 0 rgba(0, 0, 0, 0.1) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.16) inset, 0 1px 0 0 rgba(204, 204, 204, 0.5) inset;
+  --eb-sidebar-pressed: #f3f4f6;
 
   /* Chart categorical series, fixed order. Validated with the dataviz skill's checker
-     (light surface #ffffff): all six checks pass. One-series charts use chart-1 only. */
-  --eb-chart-1: #2f52f5;
+     (light surface): all checks pass. One-series charts use chart-1 only. */
+  --eb-chart-1: #245c99;
   --eb-chart-2: #e4720b;
   --eb-chart-3: #0f9a6c;
   --eb-chart-4: #9b45e6;
   --eb-chart-5: #e0427e;
   --eb-chart-6: #7d8f12;
-  /* "Others" and unknown buckets */
-  --eb-chart-muted: #d4d4d8;
+  --eb-chart-muted: #d3d7de; /* "Others" and unknown buckets */
 
-  /* Buttons (Shopify Polaris-style): a soft bevel made of inner highlight + edge shadow.
-     The only shadows in the UI besides floating menus; they make controls feel pressable. */
-  --eb-btn-primary-bg: #18181b;
-  --eb-btn-primary-hover: #2a2a2e;
+  /* Card elevation: Polaris shadow-100 + bevel (inset edges), no border */
+  --eb-card-shadow: 0 1px 0 0 rgba(26, 26, 26, 0.07), 1px 0 0 0 rgba(0, 0, 0, 0.13) inset, -1px 0 0 0 rgba(0, 0, 0, 0.13) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.17) inset, 0 1px 0 0 rgba(204, 204, 204, 0.5) inset;
+  --eb-card-shadow-hover: 0 4px 6px -2px rgba(26, 26, 26, 0.2), 1px 0 0 0 rgba(0, 0, 0, 0.13) inset, -1px 0 0 0 rgba(0, 0, 0, 0.13) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.17) inset, 0 1px 0 0 rgba(204, 204, 204, 0.5) inset;
+  --eb-accent-shadow: 0 4px 12px -4px rgba(0, 28, 58, 0.45);
+
+  /* Buttons, filter pills and inputs: Shopify Polaris values (polaris-tokens shadow.ts / color.ts),
+     with Ella Bache navy in place of Polaris' near-black primary. */
+  --eb-btn-primary-bg: #001c3a;
+  --eb-btn-primary-hover: #00152c;
+  --eb-btn-primary-active: #000f20;
   --eb-btn-primary-ink: #ffffff;
-  --eb-btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(0, 0, 0, 0.45),
-    0 1px 2px rgba(0, 0, 0, 0.18);
-  --eb-btn-primary-pressed: inset 0 2px 3px rgba(0, 0, 0, 0.45);
+  --eb-btn-gradient: linear-gradient(180deg, rgba(0, 28, 58, 0) 63.53%, rgba(255, 255, 255, 0.15) 100%);
+  --eb-btn-primary-shadow: 0 -1px 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 0 1px #001c3a inset,
+    0 0.5px 0 1.5px rgba(255, 255, 255, 0.25) inset;
+  --eb-btn-primary-shadow-hover: 0 1px 0 0 rgba(255, 255, 255, 0.24) inset, 1px 0 0 0 rgba(255, 255, 255, 0.2) inset,
+    -1px 0 0 0 rgba(255, 255, 255, 0.2) inset, 0 -1px 0 0 #000 inset, 0 -1px 0 1px #000a17;
+  --eb-btn-primary-pressed: 0 1px 0 0 rgba(0, 0, 0, 0.6) inset; /* softer than Polaris' 3px */
   --eb-btn-secondary-bg: #ffffff;
-  --eb-btn-secondary-hover: #f7f7f8;
-  --eb-btn-secondary-ink: #18181b;
-  --eb-btn-secondary-shadow: 0 0 0 1px #d4d4d8, inset 0 -1px 0 rgba(0, 0, 0, 0.08),
-    0 1px 0 rgba(0, 0, 0, 0.05);
-  --eb-btn-secondary-pressed: 0 0 0 1px #c4c4c8, inset 0 1px 2px rgba(0, 0, 0, 0.12);
-  --eb-input-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  --eb-lift-shadow: 0 6px 16px -6px rgba(9, 9, 11, 0.16);
+  --eb-btn-secondary-hover: #fafafa;
+  --eb-btn-secondary-active: #f7f7f7;
+  --eb-btn-secondary-ink: #0f1b2d;
+  --eb-btn-secondary-shadow: 0 -1px 0 0 #b5b5b5 inset, 0 0 0 1px rgba(0, 0, 0, 0.1) inset,
+    0 0.5px 0 1.5px #ffffff inset;
+  --eb-btn-secondary-shadow-hover: 0 1px 0 0 #ebebeb inset, -1px 0 0 0 #ebebeb inset, 1px 0 0 0 #ebebeb inset,
+    0 -1px 0 0 #cccccc inset;
+  --eb-btn-secondary-pressed: 0 1px 1px 0 rgba(26, 26, 26, 0.12) inset; /* softer than Polaris' 2px */
+  --eb-btn-tertiary-hover: rgba(0, 0, 0, 0.05);
+  --eb-btn-tertiary-active: rgba(0, 0, 0, 0.08);
+  --eb-pill-border: #cdd1d8;
+  --eb-input-border: #8a919c;
+  --eb-input-border-hover: #5d6675;
+  --eb-input-shadow: none;
+--eb-lift-shadow: 0 16px 32px -14px rgba(0, 28, 58, 0.45);
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --eb-page: #09090b;
-  --eb-card: #121214;
-  --eb-raised: #1b1b1f;
-  --eb-line: #2a2a2f;
-  --eb-strong-line: #fafafa;
-  --eb-heading: #fafafa;
-  --eb-body: #c4c4cc;   /* higher contrast body text */
-  --eb-subtle: #8b8b95;
+  --eb-page: #0a0e14;
+  --eb-card: #121821;
+  --eb-raised: #19212c;
+  --eb-line: #232c38;
+  --eb-strong-line: #34404f;
+  --eb-heading: #f2f5f9;
+  --eb-body: #c2cad5;
+  --eb-subtle: #8a95a5;
 
-  --eb-accent: #5d7cff;
-  --eb-accent-subtle: #161d3a;
-  --eb-accent-ink: #8ea3ff;
+  --eb-accent: #7fa8da;
+  --eb-accent-2: #5b93d6;
+  --eb-accent-subtle: #152238;
+  --eb-accent-ink: #a5c3e8;
 
-  /* Inverted in dark mode: the Total block becomes white */
-  --eb-hero-total: #fafafa;
-  --eb-hero-total-ink: #09090b;
-  --eb-hero-product: #3d5eff;
+  --eb-hero-total: linear-gradient(135deg, #0b2240 0%, #12345e 100%);
+  --eb-hero-total-ink: #ffffff;
+  --eb-hero-product: linear-gradient(135deg, #17375c 0%, #224a76 100%);
   --eb-hero-product-ink: #ffffff;
+  --eb-hero-glow: rgba(255, 255, 255, 0.06);
 
   --eb-success: #34c37a;
-  --eb-success-subtle: #0d2a1b;
+  --eb-success-subtle: #0f2a1d;
   --eb-success-ink: #5fd99a;
   --eb-danger: #f2544b;
-  --eb-danger-subtle: #2f1211;
+  --eb-danger-subtle: #2f1414;
   --eb-danger-ink: #ff8a82;
   --eb-warning: #f79009;
-  --eb-warning-subtle: #2b1d07;
+  --eb-warning-subtle: #2b1f0a;
   --eb-warning-ink: #fdb022;
 
-  --eb-sidebar: #000000;
-  --eb-sidebar-text: #d4d4d8;
-  --eb-sidebar-muted: #8b8b95;
 
-  /* Validated against dark surface #111113: all six checks pass. */
-  --eb-chart-1: #5d7cff;
+  --eb-sidebar: #0d1219;
+  --eb-sidebar-raised: rgba(255, 255, 255, 0.05);
+  --eb-sidebar-text: #c2cad5;
+  --eb-sidebar-muted: #7d8796;
+  --eb-sidebar-logo: #ffffff;
+  --eb-sidebar-edge: #2a3441;
+  --eb-sidebar-active-bg: #1f2733;
+  --eb-sidebar-active-ink: #ffffff;
+  --eb-sidebar-active-shadow: 0 -1px 0 0 #070a0f inset, 0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0.5px 0 1.5px rgba(255, 255, 255, 0.05) inset;
+  --eb-sidebar-pressed: #1a212b;
+
+  /* Validated against dark surface #14141d: all checks pass. */
+  --eb-chart-1: #5b93d6;
   --eb-chart-2: #d0731f;
   --eb-chart-3: #26a077;
   --eb-chart-4: #a774f0;
   --eb-chart-5: #e05a8b;
   --eb-chart-6: #86992b;
-  --eb-chart-muted: #3f3f46;
+  --eb-chart-muted: #3a4555;
 
-  /* Buttons in dark mode: primary inverts to white; secondary is a raised dark key. */
-  --eb-btn-primary-bg: #fafafa;
-  --eb-btn-primary-hover: #e4e4e7;
-  --eb-btn-primary-ink: #09090b;
-  --eb-btn-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    0 1px 2px rgba(0, 0, 0, 0.5);
-  --eb-btn-primary-pressed: inset 0 2px 3px rgba(0, 0, 0, 0.3);
-  --eb-btn-secondary-bg: #1f1f23;
-  --eb-btn-secondary-hover: #27272b;
-  --eb-btn-secondary-ink: #fafafa;
-  --eb-btn-secondary-shadow: 0 0 0 1px #34343a, inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 1px 2px rgba(0, 0, 0, 0.4);
-  --eb-btn-secondary-pressed: 0 0 0 1px #3f3f46, inset 0 1px 2px rgba(0, 0, 0, 0.5);
-  --eb-input-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
-  --eb-lift-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+  --eb-card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07) inset, 0 1px 0 0 rgba(255, 255, 255, 0.05) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
+  --eb-card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 0 0 rgba(255, 255, 255, 0.06) inset, 0 6px 14px -4px rgba(0, 0, 0, 0.6);
+  --eb-accent-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.6);
+
+  --eb-btn-primary-bg: #e8eef6;
+  --eb-btn-primary-hover: #ffffff;
+  --eb-btn-primary-active: #d8e1ee;
+  --eb-btn-primary-ink: #001c3a;
+  --eb-btn-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0) 63.53%, rgba(255, 255, 255, 0.3) 100%);
+  --eb-btn-primary-shadow: 0 -1px 0 1px rgba(0, 0, 0, 0.35) inset, 0 0 0 1px #c9d4e3 inset,
+    0 0.5px 0 1.5px rgba(255, 255, 255, 0.6) inset;
+  --eb-btn-primary-shadow-hover: 0 1px 0 0 rgba(255, 255, 255, 0.8) inset, 0 -1px 0 0 rgba(0, 0, 0, 0.3) inset,
+    0 -1px 0 1px rgba(0, 0, 0, 0.5);
+  --eb-btn-primary-pressed: 0 1px 0 0 rgba(0, 0, 0, 0.25) inset;
+  --eb-btn-secondary-bg: #1f2733;
+  --eb-btn-secondary-hover: #252e3b;
+  --eb-btn-secondary-active: #1a212b;
+  --eb-btn-secondary-ink: #f2f5f9;
+  --eb-btn-secondary-shadow: 0 -1px 0 0 #0b0f15 inset, 0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0.5px 0 1.5px rgba(255, 255, 255, 0.06) inset;
+  --eb-btn-secondary-shadow-hover: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, -1px 0 0 0 rgba(255, 255, 255, 0.06) inset,
+    1px 0 0 0 rgba(255, 255, 255, 0.06) inset, 0 -1px 0 0 #000 inset;
+  --eb-btn-secondary-pressed: 0 1px 1px 0 rgba(0, 0, 0, 0.45) inset;
+  --eb-btn-tertiary-hover: rgba(255, 255, 255, 0.06);
+  --eb-btn-tertiary-active: rgba(255, 255, 255, 0.1);
+  --eb-pill-border: #3a4555;
+  --eb-input-border: #4a5666;
+  --eb-input-border-hover: #6a7686;
+  --eb-input-shadow: none;
+--eb-lift-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.8);
 }
 
 /* Tailwind names → the active palette. "inline" makes classes use the live variable. */
@@ -148,11 +203,10 @@
   --color-subtle: var(--eb-subtle);
 
   --color-accent: var(--eb-accent);
+  --color-accent-2: var(--eb-accent-2);
   --color-accent-subtle: var(--eb-accent-subtle);
   --color-accent-ink: var(--eb-accent-ink);
-  --color-hero-total: var(--eb-hero-total);
   --color-hero-total-ink: var(--eb-hero-total-ink);
-  --color-hero-product: var(--eb-hero-product);
   --color-hero-product-ink: var(--eb-hero-product-ink);
 
   --color-success: var(--eb-success);
@@ -165,11 +219,32 @@
   --color-warning-subtle: var(--eb-warning-subtle);
   --color-warning-ink: var(--eb-warning-ink);
   --color-sidebar: var(--eb-sidebar);
+  --color-sidebar-raised: var(--eb-sidebar-raised);
   --color-sidebar-text: var(--eb-sidebar-text);
   --color-sidebar-muted: var(--eb-sidebar-muted);
+  --color-sidebar-logo: var(--eb-sidebar-logo);
+  --color-sidebar-edge: var(--eb-sidebar-edge);
+  --color-chart-muted: var(--eb-chart-muted);
+
+  --shadow-card: var(--eb-card-shadow);
+  --shadow-card-hover: var(--eb-card-shadow-hover);
+  --shadow-accent: var(--eb-accent-shadow);
 }
 
 @theme {
   --font-sans: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --radius-card: 0.75rem; /* soft, modern corners */
+  --font-display: 'Plus Jakarta Sans Variable', 'Inter Variable', 'Helvetica Neue', Arial, sans-serif;
+  --radius-card: 0.75rem; /* 12px, as Polaris cards */
+}
+
+/* Gradient fills (Tailwind can't map a gradient to a colour name, so these are plain classes). */
+.bg-hero-total {
+  background: var(--eb-hero-total);
+}
+.bg-hero-product {
+  background: var(--eb-hero-product);
+}
+/* Accent gradient: a very gentle navy-to-navy shift (reads as solid brand navy). */
+.bg-accent-gradient {
+  background: linear-gradient(135deg, var(--eb-accent) 0%, var(--eb-accent-2) 100%);
 }

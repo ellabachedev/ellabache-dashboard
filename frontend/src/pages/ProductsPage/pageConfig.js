@@ -1,4 +1,16 @@
-import { BadgeDollarSign, Receipt, Repeat, UserCheck, UserPlus, Users } from 'lucide-react'
+import {
+  BadgeDollarSign,
+  Ban,
+  Database,
+  Globe,
+  Layers,
+  Receipt,
+  Repeat,
+  Store,
+  UserCheck,
+  UserPlus,
+  Users,
+} from 'lucide-react'
 import { formatCount, formatMoney } from '../../utils/format.js'
 
 // Filters shown on this page (names match the API).
@@ -12,7 +24,7 @@ export const FILTER_FIELDS = [
   { name: 'data_source', label: 'Data source' },
 ]
 
-// The six figures in the grid next to each hero block (key = API field).
+// The six cards next to each hero block (key = API field).
 const cells = (labels) => [
   { key: 'transactions', label: labels.transactions, icon: Receipt, format: formatCount },
   { key: 'customers', label: 'Customers', icon: Users, format: formatCount },
@@ -22,13 +34,19 @@ const cells = (labels) => [
   { key: 'returning_customer_revenue', label: 'Returning customer revenue', icon: Repeat, format: formatMoney },
 ]
 
-// One entry per KPI section. Labels follow the Looker report; scope notes say what is counted.
+// Shared tags
+export const SOURCE_TAG = { label: 'BigQuery', icon: Database }
+
+// One entry per KPI section. Labels follow the Looker report; tags say what is counted.
 export const KPI_SECTIONS = [
   {
     id: 'total',
-    index: '01',
     title: 'Total sales',
-    note: 'Excl. gift cards, account payments and shipping · all channels · changes vs same dates last year',
+    note: 'Every real sale across salons and online.',
+    tags: [
+      { label: 'All channels', icon: Globe },
+      { label: 'Excl. gift cards, account payments & shipping', icon: Ban },
+    ],
     variant: 'total',
     hero: { key: 'revenue', label: 'Total revenue' },
     aovLabel: 'Average order value',
@@ -36,9 +54,9 @@ export const KPI_SECTIONS = [
   },
   {
     id: 'products',
-    index: '02',
     title: 'Product sales',
-    note: 'All product lines, incl. gift cards sold in salons · changes vs same dates last year',
+    note: 'Retail product lines only.',
+    tags: [{ label: 'All product lines', icon: Layers }, { label: 'Incl. gift cards sold in salons', icon: Store }],
     variant: 'product',
     hero: { key: 'revenue', label: 'Product revenue' },
     aovLabel: 'Average order value',

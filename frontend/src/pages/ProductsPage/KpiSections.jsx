@@ -1,4 +1,3 @@
-import { Info } from 'lucide-react'
 import HeroMetric from '../../components/HeroMetric.jsx'
 import KpiCard, { KpiGrid } from '../../components/KpiCard.jsx'
 import SectionTitle from '../../components/SectionTitle.jsx'
@@ -21,7 +20,7 @@ function KpiSection({ config, data }) {
 
   return (
     <section>
-      <SectionTitle title={config.title} note={config.note} />
+      <SectionTitle title={config.title} note={config.note} tags={config.tags} />
       {/* Hero beside the grid only on wide screens (the sidebar takes 240px); stacked below that. */}
       <div className="grid gap-4 xl:grid-cols-12">
         <HeroMetric
@@ -34,25 +33,17 @@ function KpiSection({ config, data }) {
         />
         <KpiGrid className="grid-cols-2 md:grid-cols-3 xl:col-span-8">
           {config.cells.map((cell) => (
-            <KpiCard key={cell.key} label={cell.label} kpi={data[cell.key]} format={cell.format} icon={cell.icon} />
+            <KpiCard
+              key={cell.key}
+              label={cell.label}
+              kpi={data[cell.key]}
+              format={cell.format}
+              icon={cell.icon}
+            />
           ))}
         </KpiGrid>
       </div>
     </section>
-  )
-}
-
-// Small notes from the API (e.g. why the period stops a day early), in one quiet panel.
-function Notes({ notes }) {
-  return (
-    <ul className="space-y-1 rounded-card border border-line bg-card px-4 py-3 text-xs text-body">
-      {notes.map((note) => (
-        <li key={note} className="flex gap-1.5">
-          <Info size={13} aria-hidden="true" className="mt-px shrink-0 text-subtle" />
-          {note}
-        </li>
-      ))}
-    </ul>
   )
 }
 
@@ -70,8 +61,7 @@ export default function KpiSections({ query }) {
   // While new numbers load, keep the old ones visible but dimmed (no flashing).
   const refreshing = query.isFetching
   return (
-    <div className={`theme-fade space-y-10 ${refreshing ? 'opacity-50' : ''}`} aria-busy={refreshing}>
-      <Notes notes={query.data.notes} />
+    <div className={`theme-fade space-y-14 ${refreshing ? 'opacity-50' : ''}`} aria-busy={refreshing}>
       {KPI_SECTIONS.map((config) => (
         <KpiSection key={config.id} config={config} data={query.data[config.id]} />
       ))}

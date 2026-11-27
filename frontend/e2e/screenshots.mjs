@@ -21,6 +21,9 @@ for (const width of widths) {
     // Wait until the KPI cards and the product table have real data.
     await page.getByText(/^Total revenue$/i).first().waitFor({ timeout: 60_000 })
     await page.getByText(/ items$/).first().waitFor({ timeout: 60_000 })
+    // The hero blocks' "Average order value" appears only once the KPI numbers have arrived
+    // (they can be the slowest request; the "Updated" pill is hidden on phones, so not used).
+    await page.getByText(/^Average order value$/).first().waitFor({ timeout: 60_000 })
     await page.waitForTimeout(1000)
     // Flag horizontal overflow (a layout bug at small widths).
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)

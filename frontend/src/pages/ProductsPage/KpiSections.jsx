@@ -3,16 +3,19 @@ import KpiCard, { KpiGrid } from '../../components/KpiCard.jsx'
 import SectionTitle from '../../components/SectionTitle.jsx'
 import { ErrorBlock, LoadingBlock } from '../../components/StateViews.jsx'
 import { formatChange, formatMoney } from '../../utils/format.js'
+import { METRIC_HELP } from './metricHelp.js'
 import { KPI_SECTIONS } from './pageConfig.js'
 
 // Hero block (headline revenue) on the left, a hairline grid of six figures on the right.
 function KpiSection({ config, data }) {
   const hero = data[config.hero.key]
   const aov = data.aov
+  const help = METRIC_HELP[config.id]
   // Last year's revenue is already in the chip and the bars, so only AOV is added here.
   const extras = [
     {
       label: config.aovLabel,
+      help: help.aov,
       value: formatMoney(aov.value),
       note: aov.change === null ? null : `${formatChange(aov.change)} vs last year`,
     },
@@ -26,6 +29,7 @@ function KpiSection({ config, data }) {
         <HeroMetric
           className="xl:col-span-4"
           label={config.hero.label}
+          help={help[config.hero.key]}
           kpi={hero}
           format={formatMoney}
           variant={config.variant}
@@ -36,6 +40,7 @@ function KpiSection({ config, data }) {
             <KpiCard
               key={cell.key}
               label={cell.label}
+              help={help[cell.key]}
               kpi={data[cell.key]}
               format={cell.format}
               icon={cell.icon}

@@ -53,7 +53,6 @@ export default function ItemsTableCard({ filters }) {
     <section>
       <SectionTitle
         title="Product performance"
-        note="Every product line ranked. Click a column to sort, or search by name."
         tags={[SOURCE_TAG]}
       />
       <ChartCard

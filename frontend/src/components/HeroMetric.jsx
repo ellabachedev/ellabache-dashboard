@@ -1,4 +1,5 @@
 import ChangeChip from './ChangeChip.jsx'
+import InfoLabel from './InfoLabel.jsx'
 
 // Look of each hero block. Gradient fills come from theme tokens (tokens.css).
 const VARIANTS = {
@@ -34,15 +35,18 @@ function YearBars({ kpi, format }) {
 }
 
 // The headline number of a section on a navy block: big value, change vs last year,
-// this-year/last-year bars and supporting figures. extras: [{ label, value, note }] (formatted text).
+// this-year/last-year bars and supporting figures. extras: [{ label, value, note, help }] (formatted text).
+// `help` (optional): plain explanation shown when a label is hovered or tapped.
 // Narrow column (wide screens): everything stacks. Full width (mid screens): two halves side by side.
-export default function HeroMetric({ label, kpi, format, variant = 'total', extras = [], className = '' }) {
+export default function HeroMetric({ label, help, kpi, format, variant = 'total', extras = [], className = '' }) {
   return (
     <div
       className={`theme-fade hover-lift grid gap-8 rounded-card p-6 shadow-card md:grid-cols-2 md:gap-12 md:p-7 xl:flex xl:flex-col xl:justify-between xl:gap-8 ${VARIANTS[variant]} ${className}`}
     >
       <div>
-        <p className="text-sm font-semibold opacity-90">{label}</p>
+        <p className="text-sm font-semibold opacity-90">
+          <InfoLabel label={label} help={help} />
+        </p>
         {/* Proportional digits for big standalone numbers */}
         <p className="font-display mt-5 text-[2.75rem] font-extrabold leading-none tracking-[-0.04em] sm:text-[3.5rem]">
           {format(kpi.value)}
@@ -58,7 +62,9 @@ export default function HeroMetric({ label, kpi, format, variant = 'total', extr
           <dl className="flex flex-wrap gap-3">
             {extras.map((extra) => (
               <div key={extra.label} className="min-w-0 flex-1 rounded-xl bg-white/10 px-4 py-3 ring-1 ring-white/15">
-                <dt className="text-xs opacity-80">{extra.label}</dt>
+                <dt className="text-xs opacity-80">
+                  <InfoLabel label={extra.label} help={extra.help} />
+                </dt>
                 <dd className="mt-1 flex flex-wrap items-baseline gap-x-2">
                   <span className="font-display text-xl font-bold tracking-tight">{extra.value}</span>
                   {extra.note && <span className="text-xs opacity-80">{extra.note}</span>}

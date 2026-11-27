@@ -38,7 +38,6 @@ export default function GiftCardsSection({ filters }) {
     <section>
       <SectionTitle
         title="Gift cards sold online"
-        note="Which gift card values sell best in the Shopify store."
         tags={[
           { label: 'Shopify online store', icon: ShoppingCart },
           { label: 'Totals only, no customer details', icon: ShieldCheck },

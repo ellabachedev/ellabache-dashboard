@@ -1,5 +1,5 @@
 -- Choices for the sales filter bar: distinct values seen in the last 3 years, one scan.
--- {product_category} and {treatment_category} are the same expressions the filters use.
+-- The two category expressions are the same ones the filters use.
 SELECT
   ARRAY_AGG(DISTINCT IF(item_type = 'Product', {product_category}, NULL) IGNORE NULLS)
     AS product_category,

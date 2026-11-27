@@ -19,6 +19,26 @@ app.include_router(filters.router, prefix="/api")
 app.include_router(products.router, prefix="/api")
 
 
+@app.middleware("http")
+async def api_cache_headers(request: Request, call_next):
+    """Let the browser reuse successful API answers briefly (third cache layer, CLAUDE.md §2).
+
+    "private" = only this person's browser may keep it, never a shared proxy. Errors and the
+    health check are never cached.
+    """
+    response = await call_next(request)
+    path = request.url.path
+    if (
+        request.method == "GET"
+        and path.startswith("/api/")
+        and path != "/api/health"
+        and response.status_code == 200
+    ):
+        max_age = get_settings().browser_cache_seconds
+        response.headers["Cache-Control"] = f"private, max-age={max_age}"
+    return response
+
+
 @app.exception_handler(DataSourceError)
 def data_source_unavailable(_: Request, err: DataSourceError) -> JSONResponse:
     # A friendly message only; the full error is in the server log.

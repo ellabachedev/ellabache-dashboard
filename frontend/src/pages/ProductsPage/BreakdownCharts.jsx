@@ -56,7 +56,7 @@ export default function BreakdownCharts({ filters }) {
     <section>
       <SectionTitle
         title="Where product revenue comes from"
-        note="The biggest categories, states and salons. Grey bars group everything else."
+        note="Top sellers. Grey = everything else."
         tags={[SOURCE_TAG]}
       />
       {/* 1 column on phones, 2 on mid widths (last panel spans both), 3 on wide screens */}

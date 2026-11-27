@@ -1,7 +1,7 @@
 -- Products page "Product Category Performance" table: one row per item name.
 -- Scope: item_type = 'Product' (same as the Products KPIs; verified against Looker 24 Nov 2026).
 -- Revenue = SUM(item_amount); Orders = distinct transactions; Quantity = SUM(item_qty).
--- {order_by} comes from a fixed whitelist in app/services/products_table.py.
+-- The sort order comes from a fixed whitelist in app/services/products_table.py.
 -- @search is an optional case-insensitive "contains" match on the item name ('' = no search).
 WITH items AS (
   SELECT

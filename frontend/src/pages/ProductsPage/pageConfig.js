@@ -3,7 +3,6 @@ import {
   Ban,
   Database,
   Globe,
-  Layers,
   Receipt,
   Repeat,
   Store,
@@ -42,10 +41,11 @@ export const KPI_SECTIONS = [
   {
     id: 'total',
     title: 'Total sales',
-    note: 'Every real sale across salons and online.',
     tags: [
-      { label: 'All channels', icon: Globe },
-      { label: 'Excl. gift cards, account payments & shipping', icon: Ban },
+      { label: 'Salons + online', icon: Globe },
+      // Salon gift cards are not revenue (is_revenue = 0); Shopify gift cards are, so they count here.
+      // Full detail (incl. account payments) is in the Total revenue explanation.
+      { label: 'Excl. salon gift cards & shipping', icon: Ban },
     ],
     variant: 'total',
     hero: { key: 'revenue', label: 'Total revenue' },
@@ -55,8 +55,8 @@ export const KPI_SECTIONS = [
   {
     id: 'products',
     title: 'Product sales',
-    note: 'Retail product lines only.',
-    tags: [{ label: 'All product lines', icon: Layers }, { label: 'Incl. gift cards sold in salons', icon: Store }],
+    note: 'Products only, no treatments.',
+    tags: [{ label: 'Incl. salon gift cards', icon: Store }],
     variant: 'product',
     hero: { key: 'revenue', label: 'Product revenue' },
     aovLabel: 'Average order value',

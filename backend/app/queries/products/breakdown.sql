@@ -1,6 +1,6 @@
 -- Products page "Revenue by ..." charts: product revenue grouped by one dimension.
 -- Scope: item_type = 'Product' (same as the Products KPIs).
--- {dimension} comes from a fixed whitelist in app/services/products_breakdown.py.
+-- The grouping column (label) comes from a fixed whitelist in app/services/products_breakdown.py.
 -- Returns the top @top_n groups plus the grand total, so the app can add an "Others" bar.
 WITH grouped AS (
   SELECT

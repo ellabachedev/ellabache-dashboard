@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     cache_ttl_recent_seconds: int = 10 * 60
     cache_ttl_closed_seconds: int = 12 * 60 * 60
     cache_ttl_reference_seconds: int = 24 * 60 * 60
+    # How long the browser may reuse an API answer (Cache-Control max-age). Short on purpose.
+    browser_cache_seconds: int = 60
 
     business_timezone: str = "Australia/Sydney"
     # Longest date range a page may ask for (keeps "same dates last year" from overlapping).

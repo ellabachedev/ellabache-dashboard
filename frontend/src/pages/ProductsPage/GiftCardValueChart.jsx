@@ -1,12 +1,15 @@
 import { useCallback, useMemo } from 'react'
 import EChart from '../../components/EChart.jsx'
 import { tooltipStyle } from '../../theme/chartColors.js'
-import { formatCount, formatMoney } from '../../utils/format.js'
+import { formatCount, formatMoney, formatMoneyShort } from '../../utils/format.js'
 
-// "Gift card $100" -> 100, so the columns run from the smallest card value to the largest.
+// "Beauty Gift Cards - $100" -> 100, so the columns run from the smallest card value to the largest.
 const cardValue = (name) => Number(/\$([\d,]+)/.exec(name ?? '')?.[1]?.replace(/,/g, '')) || Infinity
-// Short axis label: "Gift card $100" -> "$100"
-const shortName = (name) => (name ?? '(No name)').replace(/^gift\s*card\s*/i, '') || name
+// Short axis label: the card value ("$100") when the name has one, otherwise the full name.
+// Long names made ECharts hide every other label.
+const shortName = (name) => /\$[\d,]+/.exec(name ?? '')?.[0] ?? name ?? '(No name)'
+// On phones the columns are too narrow for a value on top of each; the tooltip shows it instead.
+const roomForLabels = () => window.matchMedia('(min-width: 640px)').matches
 
 // Axis ticks are round numbers, so drop the decimals: $80K, $1.5M.
 const axisMoney = (value) =>
@@ -69,13 +72,13 @@ export default function GiftCardValueChart({ rows }) {
           emphasis: { itemStyle: { opacity: 0.85 } },
           // Five or so columns: a value on top of each reads faster than the axis.
           label: {
-            show: true,
+            show: roomForLabels(),
             position: 'top',
             distance: 6,
             color: c.heading,
             fontSize: 12,
             fontWeight: 600,
-            formatter: ({ value }) => formatMoney(value),
+            formatter: ({ value }) => formatMoneyShort(value),
           },
         },
       ],

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { toQueryString } from '../api/client.js'
-import { formatChange, formatCount, formatDateRange, formatMoney } from './format.js'
+import { formatChange, formatCount, formatDateRange, formatMoney, formatMoneyShort } from './format.js'
+
+describe('formatMoneyShort', () => {
+  it('drops cents below $1,000 and matches formatMoney above', () => {
+    expect(formatMoneyShort(800)).toBe('$800')
+    expect(formatMoneyShort(1750)).toBe('$1.75K')
+    expect(formatMoneyShort(null)).toBe('—')
+  })
+})
 
 describe('formatMoney', () => {
   it('matches the Looker style', () => {

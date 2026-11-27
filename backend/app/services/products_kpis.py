@@ -12,10 +12,6 @@ from app.services.freshness import SALES_TABLE, get_complete_through
 from app.services.periods import ComparisonPeriods, build_comparison_periods, cache_ttl_for
 from app.services.status import data_status
 
-PRODUCTS_INCLUDE_GIFT_CARDS_NOTE = (
-    "Products figures include gift cards sold in salons (same as the Looker report)."
-)
-
 
 def get_products_kpis(
     filters: SalesFilters, align_to_complete_data: bool = True
@@ -88,10 +84,10 @@ def _period_info(periods: ComparisonPeriods) -> ComparisonPeriodInfo:
 
 
 def _notes(periods: ComparisonPeriods) -> list[str]:
-    notes = [PRODUCTS_INCLUDE_GIFT_CARDS_NOTE]
-    if periods.trimmed:
-        notes.append(
-            f"Figures run to {periods.current_end:%d %b %Y}: newer data has not arrived for "
-            "every source yet, so both years stop on the same day."
-        )
-    return notes
+    # "Includes salon gift cards" is shown as a tag on the page, so it is not repeated here.
+    if not periods.trimmed:
+        return []
+    return [
+        f"Data is complete to {periods.current_end.day} {periods.current_end:%b %Y}, "
+        "so both years stop on the same day."
+    ]

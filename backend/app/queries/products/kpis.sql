@@ -1,7 +1,8 @@
 -- Products page KPI cards: "National > Total" and "National > Products",
 -- for the chosen period and the same dates one year earlier, in one scan of the table.
 -- Definitions verified against Looker on 24 Nov 2026: see docs/metrics.md.
--- {table} and {filters} are filled by the app from a fixed whitelist; values are @parameters.
+-- The table name and the filter lines are filled in by the app from a fixed whitelist;
+-- user values are always @parameters. (No curly-brace placeholders in comments: they get filled too.)
 WITH base AS (
   SELECT
     IF(DATE(purchase_date) BETWEEN @current_start AND @current_end, 'current', 'previous') AS period,

@@ -1,5 +1,6 @@
 import { CalendarDays, History } from 'lucide-react'
-import DataUpdated from '../../components/DataUpdated.jsx'
+import StaleWarning from '../../components/DataUpdated.jsx'
+import { updatedTag } from '../../components/updatedTag.js'
 import FilterBar from '../../components/FilterBar.jsx'
 import NoteList from '../../components/NoteList.jsx'
 import PageHeader from '../../components/PageHeader.jsx'
@@ -38,11 +39,9 @@ export default function ProductsPage() {
       <PageHeader
         section="Customer sales"
         title="Products"
-        subtitle="Product revenue, customers and best sellers across salons and the online store."
-        tags={periodTags(kpis.data?.period)}
-      >
-        <DataUpdated status={kpis.data?.status} />
-      </PageHeader>
+        subtitle="Product sales across salons and online."
+        tags={[...periodTags(kpis.data?.period), updatedTag(kpis.data?.status)].filter(Boolean)}
+      />
 
       {/* Each block fades up in turn on first load (60 ms apart); see theme/motion.css. */}
       <div className="space-y-14">
@@ -57,6 +56,7 @@ export default function ProductsPage() {
           />
           {/* Notes about the period (e.g. why it stops a day early) sit right under the dates */}
           <NoteList notes={kpis.data?.notes} className="mt-2.5 px-1" />
+          <StaleWarning status={kpis.data?.status} className="mt-2.5" />
         </Reveal>
         <Reveal step={1}>
           <KpiSections query={kpis} />

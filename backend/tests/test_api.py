@@ -15,6 +15,16 @@ def test_health():
     assert response.json() == {"status": "ok"}
 
 
+def test_browser_may_cache_good_answers_but_not_errors_or_health(fake_bq):
+    ok = client.get("/api/products/kpis", params=NOV | {"align_to_complete_data": "false"})
+    assert ok.headers["Cache-Control"] == "private, max-age=60"
+    assert "Cache-Control" not in client.get("/api/health").headers
+    bad = client.get(
+        "/api/products/kpis", params={"start_date": "2026-11-24", "end_date": "2026-11-01"}
+    )
+    assert "Cache-Control" not in bad.headers
+
+
 def test_kpis_endpoint_shape(fake_bq):
     response = client.get("/api/products/kpis", params=NOV | {"align_to_complete_data": "false"})
     assert response.status_code == 200

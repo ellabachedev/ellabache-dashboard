@@ -11,6 +11,14 @@ export function formatMoney(value) {
   return value.toLocaleString(LOCALE, { style: 'currency', currency: 'AUD', currencyDisplay: 'narrowSymbol' })
 }
 
+// Chart labels: like formatMoney, but small amounts in whole dollars ($800, not $800.00),
+// so labels next to "$1.75K" look consistent.
+export function formatMoneyShort(value) {
+  if (value === null || value === undefined) return '—'
+  if (Math.abs(value) >= 1_000) return formatMoney(value)
+  return `$${Math.round(value).toLocaleString(LOCALE)}`
+}
+
 // 18,703 (below 100K), 1.9M / 125.4K (above)
 export function formatCount(value) {
   if (value === null || value === undefined) return '—'
